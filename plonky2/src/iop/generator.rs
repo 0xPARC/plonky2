@@ -9,6 +9,7 @@ use core::fmt::Debug;
 use core::marker::PhantomData;
 
 use anyhow::{anyhow, Result};
+use dyn_clone::DynClone;
 
 use crate::field::extension::Extendable;
 use crate::field::types::Field;
@@ -105,7 +106,7 @@ pub fn generate_partial_witness<
 
 /// A generator participates in the generation of the witness.
 pub trait WitnessGenerator<F: RichField + Extendable<D>, const D: usize>:
-    'static + Send + Sync + Debug
+    'static + Send + Sync + Debug + DynClone
 {
     fn id(&self) -> String;
 
@@ -125,8 +126,15 @@ pub trait WitnessGenerator<F: RichField + Extendable<D>, const D: usize>:
         Self: Sized;
 }
 
+impl<F: RichField + Extendable<D>, const D: usize> Clone for Box<dyn WitnessGenerator<F, D>> {
+    fn clone(&self) -> Self {
+        dyn_clone::clone_box(&**self)
+    }
+}
+
 /// A wrapper around an `Box<WitnessGenerator>` which implements `PartialEq`
 /// and `Eq` based on generator IDs.
+#[derive(Clone)]
 pub struct WitnessGeneratorRef<F: RichField + Extendable<D>, const D: usize>(
     pub Box<dyn WitnessGenerator<F, D>>,
 );
@@ -204,7 +212,7 @@ impl<F: Field> GeneratedValues<F> {
 
 /// A generator which runs once after a list of dependencies is present in the witness.
 pub trait SimpleGenerator<F: RichField + Extendable<D>, const D: usize>:
-    'static + Send + Sync + Debug
+    'static + Send + Sync + Debug + Clone
 {
     fn id(&self) -> String;
 
@@ -233,7 +241,7 @@ pub trait SimpleGenerator<F: RichField + Extendable<D>, const D: usize>:
         Self: Sized;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SimpleGeneratorAdapter<
     F: RichField + Extendable<D>,
     SG: SimpleGenerator<F, D> + ?Sized,

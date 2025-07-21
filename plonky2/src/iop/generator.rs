@@ -283,7 +283,7 @@ impl<F: RichField + Extendable<D>, SG: SimpleGenerator<F, D>, const D: usize> Wi
 }
 
 /// A generator which copies one wire to another.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct CopyGenerator {
     pub(crate) src: Target,
     pub(crate) dst: Target,
@@ -320,7 +320,7 @@ impl<F: RichField + Extendable<D>, const D: usize> SimpleGenerator<F, D> for Cop
 }
 
 /// A generator for including a random value
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct RandomValueGenerator {
     pub(crate) target: Target,
 }
@@ -354,7 +354,7 @@ impl<F: RichField + Extendable<D>, const D: usize> SimpleGenerator<F, D> for Ran
 }
 
 /// A generator for testing if a value equals zero
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct NonzeroTestGenerator {
     pub(crate) to_test: Target,
     pub(crate) dummy: Target,

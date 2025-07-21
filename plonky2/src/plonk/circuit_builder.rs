@@ -9,6 +9,7 @@ use std::{collections::BTreeMap, sync::Arc};
 use hashbrown::{HashMap, HashSet};
 use itertools::Itertools;
 use log::{debug, info, warn, Level};
+use serde::{Deserialize, Serialize};
 #[cfg(feature = "timing")]
 use web_time::Instant;
 
@@ -76,7 +77,7 @@ pub enum LookupChallenges {
 /// the last lookup table row and the first lookup table row. Since the rows are in
 /// reverse order in the trace, they actually correspond, respectively, to: the indices
 /// of the first `LookupGate`, the first `LookupTableGate` and the last `LookupTableGate`.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct LookupWire {
     /// Index of the last lookup row (i.e. the first `LookupGate`).
     pub last_lu_gate: usize,

@@ -2,6 +2,8 @@
 use alloc::vec::Vec;
 use core::ops::Range;
 
+use serde::{Deserialize, Serialize};
+
 use crate::field::extension::algebra::ExtensionAlgebra;
 use crate::field::extension::{Extendable, FieldExtension, OEF};
 use crate::field::types::Field;
@@ -14,8 +16,8 @@ use crate::plonk::circuit_builder::CircuitBuilder;
 /// This is typically used in recursion settings, where the outer circuit must verify
 /// a proof satisfying an inner circuit's statement, which is verified using arithmetic
 /// in an extension of the base field.
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-pub struct ExtensionTarget<const D: usize>(pub [Target; D]);
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Serialize, Deserialize)]
+pub struct ExtensionTarget<const D: usize>(#[serde(with = "serde_arrays")] pub [Target; D]);
 
 impl<const D: usize> Default for ExtensionTarget<D> {
     fn default() -> Self {

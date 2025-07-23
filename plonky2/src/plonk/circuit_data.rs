@@ -410,26 +410,6 @@ impl<C: GenericConfig<D>, const D: usize> VerifierOnlyCircuitData<C, D> {
     }
 }
 
-impl<C: GenericConfig<D>, const D: usize> Serialize for VerifierOnlyCircuitData<C, D> {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let bytes = self.to_bytes().map_err(serde::ser::Error::custom)?;
-        serde_bytes::ByteBuf::from(bytes).serialize(serializer)
-    }
-}
-
-impl<'de, C: GenericConfig<D>, const D: usize> Deserialize<'de> for VerifierOnlyCircuitData<C, D> {
-    fn deserialize<DE>(deserializer: DE) -> Result<Self, DE::Error>
-    where
-        DE: serde::Deserializer<'de>,
-    {
-        let bytes = <&'de serde_bytes::Bytes>::deserialize(deserializer)?;
-        Ok(VerifierOnlyCircuitData::from_bytes(&bytes).map_err(serde::de::Error::custom)?)
-    }
-}
-
 /// Circuit data required by both the prover and the verifier.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize)]
 pub struct CommonCircuitData<F: RichField + Extendable<D>, const D: usize> {

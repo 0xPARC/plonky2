@@ -9,6 +9,18 @@ Plonky2 is being deprecated and will no longer receive updates or support.
 
 Please consider using **[Plonky3](https://github.com/Plonky3/Plonky3)** instead, Polygon's next-generation ZK proving system.
 
+## About this fork
+
+This fork was created after the anouncement of Plonky2 being deprecated.  The
+purpose of this fork is to contain features and bugfixes needed for the
+development and deployment of [pod2](https://github.com/0xPARC/pod2).
+
+Security bugs are not a priority for this fork.
+
+This is not a community fork: don't expect any commitment from the developers
+of this fork towards any need beyond pod2.  Don't expect community Pull
+Requests to be reviewed and/or merged.
+
 ## Documentation
 
 For more details about the Plonky2 argument system, see this [writeup](plonky2/plonky2.pdf).

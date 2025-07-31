@@ -19,7 +19,7 @@ use core::ops::{Range, RangeFrom};
 use std::collections::BTreeMap;
 
 use anyhow::Result;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use super::circuit_builder::LookupWire;
 use crate::field::extension::Extendable;
@@ -151,13 +151,13 @@ pub struct MockCircuitData<F: RichField + Extendable<D>, C: GenericConfig<D, F =
 impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
     MockCircuitData<F, C, D>
 {
-    pub fn generate_witness(&self, inputs: PartialWitness<F>) -> PartitionWitness<F> {
+    pub fn generate_witness(&self, inputs: PartialWitness<F>) -> PartitionWitness<'_, F> {
         generate_partial_witness::<F, C, D>(inputs, &self.prover_only, &self.common).unwrap()
     }
 }
 
 /// Circuit data required by the prover or the verifier.
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct CircuitData<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize> {
     pub prover_only: ProverOnlyCircuitData<F, C, D>,
     pub verifier_only: VerifierOnlyCircuitData<C, D>,
@@ -314,10 +314,7 @@ impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
         Ok(buffer)
     }
 
-    pub fn from_bytes(
-        bytes: Vec<u8>,
-        gate_serializer: &dyn GateSerializer<F, D>,
-    ) -> IoResult<Self> {
+    pub fn from_bytes(bytes: &[u8], gate_serializer: &dyn GateSerializer<F, D>) -> IoResult<Self> {
         let mut buffer = Buffer::new(&bytes);
         buffer.read_verifier_circuit_data(gate_serializer)
     }
@@ -335,7 +332,7 @@ impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
 }
 
 /// Circuit data required by the prover, but not the verifier.
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct ProverOnlyCircuitData<
     F: RichField + Extendable<D>,
     C: GenericConfig<D, F = F>,
@@ -391,7 +388,7 @@ impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
 }
 
 /// Circuit data required by the verifier, but not the prover.
-#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct VerifierOnlyCircuitData<C: GenericConfig<D>, const D: usize> {
     /// A commitment to each constant polynomial and each permutation polynomial.
     pub constants_sigmas_cap: MerkleCap<C::F, C::Hasher>,
@@ -407,7 +404,7 @@ impl<C: GenericConfig<D>, const D: usize> VerifierOnlyCircuitData<C, D> {
         Ok(buffer)
     }
 
-    pub fn from_bytes(bytes: Vec<u8>) -> IoResult<Self> {
+    pub fn from_bytes(bytes: &[u8]) -> IoResult<Self> {
         let mut buffer = Buffer::new(&bytes);
         buffer.read_verifier_only_circuit_data()
     }
@@ -460,10 +457,7 @@ impl<F: RichField + Extendable<D>, const D: usize> CommonCircuitData<F, D> {
         Ok(buffer)
     }
 
-    pub fn from_bytes(
-        bytes: Vec<u8>,
-        gate_serializer: &dyn GateSerializer<F, D>,
-    ) -> IoResult<Self> {
+    pub fn from_bytes(bytes: &[u8], gate_serializer: &dyn GateSerializer<F, D>) -> IoResult<Self> {
         let mut buffer = Buffer::new(&bytes);
         buffer.read_common_circuit_data(gate_serializer)
     }
@@ -668,7 +662,7 @@ impl<F: RichField + Extendable<D>, const D: usize> CommonCircuitData<F, D> {
 /// is intentionally missing certain fields, such as `CircuitConfig`, because we support only a
 /// limited form of dynamic inner circuits. We can't practically make things like the wire count
 /// dynamic, at least not without setting a maximum wire count and paying for the worst case.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct VerifierCircuitTarget {
     /// A commitment to each constant polynomial and each permutation polynomial.
     pub constants_sigmas_cap: MerkleCapTarget,

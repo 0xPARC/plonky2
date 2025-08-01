@@ -20,8 +20,9 @@ impl RichField for GoldilocksField {}
 pub const NUM_HASH_OUT_ELTS: usize = 4;
 
 /// Represents a ~256 bit hash output.
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
-#[serde(bound = "")]
+// #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+// #[serde(bound = "")]
 pub struct HashOut<F: Field> {
     pub elements: [F; NUM_HASH_OUT_ELTS],
 }
@@ -111,6 +112,58 @@ impl<F: RichField> GenericHashOut<F> for HashOut<F> {
 impl<F: Field> Default for HashOut<F> {
     fn default() -> Self {
         Self::ZERO
+    }
+}
+
+impl<F: RichField> Serialize for HashOut<F> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        // Output the hash as a bigint string.
+        let b = self.to_bytes();
+        let big_int = num::BigUint::from_bytes_le(&b);
+        serializer.serialize_str(big_int.to_str_radix(10).as_str())
+    }
+}
+impl<'de, F: RichField> Deserialize<'de> for HashOut<F> {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct HashOutVisitor;
+
+        impl<'a> Visitor<'a> for HashOutVisitor {
+            type Value = String;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a string with integer value within BN128 scalar field")
+            }
+
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                Ok(v.to_string())
+            }
+        }
+
+        let deserialized_str = deserializer.deserialize_str(HashOutVisitor).unwrap();
+        let big_int = num::BigUint::parse_bytes(deserialized_str.as_bytes(), 10).unwrap();
+
+        let mut bytes = big_int.to_bytes_le();
+        for _i in bytes.len()..32 {
+            bytes.push(0);
+        }
+
+        let limbs: Vec<F> = bytes
+            .chunks(8)
+            .map(|chunk| F::from_canonical_u64(u64::from_le_bytes(chunk.try_into().unwrap())))
+            .collect();
+
+        Ok(HashOut {
+            elements: limbs.try_into().unwrap(),
+        })
     }
 }
 

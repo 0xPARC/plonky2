@@ -119,6 +119,7 @@ fn fri_committed_trees<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>,
         values = coeffs.coset_fft(shift.into())
     }
 
+    /*
     // When verifying this proof in a circuit with a different number of query steps,
     // we need the challenger to stay in sync with the verifier. Therefore, the challenger
     // must observe the additional hash caps and generate dummy challenges.
@@ -130,6 +131,7 @@ fn fri_committed_trees<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>,
             challenger.get_extension_challenge::<D>();
         }
     }
+    */
 
     // The coefficients being removed here should always be zero.
     coeffs
@@ -137,6 +139,7 @@ fn fri_committed_trees<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>,
         .truncate(coeffs.len() >> fri_params.config.rate_bits);
 
     challenger.observe_extension_elements(&coeffs.coeffs);
+    /*
     // When verifying this proof in a circuit with a different final polynomial length,
     // the challenger needs to observe the full length of the final polynomial.
     if let Some(len) = final_poly_coeff_len {
@@ -145,6 +148,7 @@ fn fri_committed_trees<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>,
             challenger.observe_extension_element(&F::Extension::ZERO);
         }
     }
+    */
 
     (trees, coeffs)
 }

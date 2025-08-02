@@ -42,7 +42,7 @@ fn get_challenges<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, cons
     let has_lookup = common_data.num_lookup_polys != 0;
 
     // Observe the FRI config
-    common_data.fri_params.observe(&mut challenger);
+    // common_data.fri_params.observe(&mut challenger);
 
     // Observe the instance.
     challenger.observe_hash::<C::Hasher>(*circuit_digest);
@@ -282,9 +282,9 @@ impl<F: RichField + Extendable<D>, const D: usize> CircuitBuilder<F, D> {
         let has_lookup = inner_common_data.num_lookup_polys != 0;
 
         // Observe the FRI config
-        inner_common_data
-            .fri_params
-            .observe_target(self, &mut challenger);
+        // inner_common_data
+        //     .fri_params
+        //     .observe_target(self, &mut challenger);
 
         // Observe the instance.
         challenger.observe_hash(&inner_circuit_digest);

@@ -69,6 +69,7 @@ impl FriConfig {
         1 << self.cap_height
     }
 
+    /*
     /// Observe the FRI configuration parameters.
     pub fn observe<F: RichField, H: Hasher<F>>(&self, challenger: &mut Challenger<F, H>) {
         challenger.observe_element(F::from_canonical_usize(self.rate_bits));
@@ -95,6 +96,7 @@ impl FriConfig {
         challenger
             .observe_element(builder.constant(F::from_canonical_usize(self.num_query_rounds)));
     }
+    */
 }
 
 /// FRI parameters, including generated parameters which are specific to an instance size, in
@@ -142,6 +144,7 @@ impl FriParams {
         1 << self.final_poly_bits()
     }
 
+    /*
     pub fn observe<F: RichField, H: Hasher<F>>(&self, challenger: &mut Challenger<F, H>) {
         self.config.observe(challenger);
 
@@ -178,4 +181,5 @@ impl FriParams {
             ),
         );
     }
+    */
 }

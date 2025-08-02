@@ -52,26 +52,28 @@ impl<F: RichField, H: Hasher<F>> Challenger<F, H> {
             })
             .collect();
 
-        // When this proof was generated in a circuit with a different number of query steps,
-        // the challenger needs to observe the additional hash caps.
-        if let Some(step_count) = max_num_query_steps {
-            let cap_len = (1 << config.cap_height) * NUM_HASH_OUT_ELTS;
-            let zero_cap = vec![F::ZERO; cap_len];
-            for _ in commit_phase_merkle_caps.len()..step_count {
-                self.observe_elements(&zero_cap);
-                self.get_extension_challenge::<D>();
-            }
-        }
+        /*        // When this proof was generated in a circuit with a different number of query steps,
+                // the challenger needs to observe the additional hash caps.
+                if let Some(step_count) = max_num_query_steps {
+                    let cap_len = (1 << config.cap_height) * NUM_HASH_OUT_ELTS;
+                    let zero_cap = vec![F::ZERO; cap_len];
+                    for _ in commit_phase_merkle_caps.len()..step_count {
+                        self.observe_elements(&zero_cap);
+                        self.get_extension_challenge::<D>();
+                    }
+                }
+        */
 
         self.observe_extension_elements(&final_poly.coeffs);
-        // When this proof was generated in a circuit with a different final polynomial length,
-        // the challenger needs to observe the full length of the final polynomial.
-        if let Some(len) = final_poly_coeff_len {
-            let current_len = final_poly.coeffs.len();
-            for _ in current_len..len {
-                self.observe_extension_element(&F::Extension::ZERO);
-            }
-        }
+        /*       // When this proof was generated in a circuit with a different final polynomial length,
+               // the challenger needs to observe the full length of the final polynomial.
+               if let Some(len) = final_poly_coeff_len {
+                   let current_len = final_poly.coeffs.len();
+                   for _ in current_len..len {
+                       self.observe_extension_element(&F::Extension::ZERO);
+                   }
+               }
+        */
 
         self.observe_element(pow_witness);
         let fri_pow_response = self.get_challenge();

@@ -244,7 +244,7 @@ pub trait SimpleGenerator<F: RichField + Extendable<D>, const D: usize>:
 #[derive(Debug, Clone)]
 pub struct SimpleGeneratorAdapter<
     F: RichField + Extendable<D>,
-    SG: SimpleGenerator<F, D> + ?Sized,
+    SG: SimpleGenerator<F, D>,
     const D: usize,
 > {
     _phantom: PhantomData<F>,

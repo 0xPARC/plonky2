@@ -284,7 +284,7 @@ fn test_serialization<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, 
         common_data_bytes.len()
     );
     let common_data_from_bytes =
-        CommonCircuitData::<F, D>::from_bytes(common_data_bytes, &gate_serializer)
+        CommonCircuitData::<F, D>::from_bytes(&common_data_bytes, &gate_serializer)
             .map_err(|_| anyhow::Error::msg("CommonCircuitData deserialization failed."))?;
     assert_eq!(common_data, &common_data_from_bytes);
 

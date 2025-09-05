@@ -315,7 +315,7 @@ impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
     }
 
     pub fn from_bytes(bytes: &[u8], gate_serializer: &dyn GateSerializer<F, D>) -> IoResult<Self> {
-        let mut buffer = Buffer::new(&bytes);
+        let mut buffer = Buffer::new(bytes);
         buffer.read_verifier_circuit_data(gate_serializer)
     }
 
@@ -388,7 +388,7 @@ impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
 }
 
 /// Circuit data required by the verifier, but not the prover.
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct VerifierOnlyCircuitData<C: GenericConfig<D>, const D: usize> {
     /// A commitment to each constant polynomial and each permutation polynomial.
     pub constants_sigmas_cap: MerkleCap<C::F, C::Hasher>,
@@ -405,7 +405,7 @@ impl<C: GenericConfig<D>, const D: usize> VerifierOnlyCircuitData<C, D> {
     }
 
     pub fn from_bytes(bytes: &[u8]) -> IoResult<Self> {
-        let mut buffer = Buffer::new(&bytes);
+        let mut buffer = Buffer::new(bytes);
         buffer.read_verifier_only_circuit_data()
     }
 }
@@ -458,7 +458,7 @@ impl<F: RichField + Extendable<D>, const D: usize> CommonCircuitData<F, D> {
     }
 
     pub fn from_bytes(bytes: &[u8], gate_serializer: &dyn GateSerializer<F, D>) -> IoResult<Self> {
-        let mut buffer = Buffer::new(&bytes);
+        let mut buffer = Buffer::new(bytes);
         buffer.read_common_circuit_data(gate_serializer)
     }
 

@@ -1,6 +1,7 @@
 #[cfg(not(feature = "std"))]
 use alloc::{vec, vec::Vec};
 
+use anyhow::anyhow;
 use hashbrown::HashSet;
 
 use super::circuit_builder::NUM_COINS_LOOKUP;
@@ -187,7 +188,7 @@ impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
         &self,
         challenges: &ProofChallenges<F, D>,
         common_data: &CommonCircuitData<F, D>,
-    ) -> FriInferredElements<F, D> {
+    ) -> anyhow::Result<FriInferredElements<F, D>> {
         let ProofChallenges {
             plonk_zeta,
             fri_challenges:
@@ -215,11 +216,12 @@ impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
                 * F::primitive_root_of_unity(log_n).exp_u64(reverse_bits(x_index, log_n) as u64);
             let mut old_eval = fri_combine_initial::<F, C, D>(
                 &common_data.get_fri_instance(*plonk_zeta),
-                &self
-                    .proof
+                self.proof
                     .opening_proof
                     .query_round_proofs
-                    .initial_trees_proofs[&x_index],
+                    .initial_trees_proofs
+                    .get(&x_index)
+                    .ok_or_else(|| anyhow!("fri_query_index missing from initial_trees_proofs"))?,
                 *fri_alpha,
                 subgroup_x,
                 &precomputed_reduced_evals,
@@ -254,7 +256,7 @@ impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F>, const D: usize>
                 x_index = coset_index;
             }
         }
-        FriInferredElements(fri_inferred_elements)
+        Ok(FriInferredElements(fri_inferred_elements))
     }
 }
 

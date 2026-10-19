@@ -4,7 +4,6 @@ description = "Feature-gated wrapper around rayon"
 version = "1.0.0"
 edition.workspace = true
 license.workspace = true
-homepage.workspace = true
 repository.workspace = true
 keywords.workspace = true
 categories.workspace = true
@@ -18,3 +17,6 @@ rayon = { version = "1.5.3", optional = true }
 # Display math equations properly in documentation
 [package.metadata.docs.rs]
 rustdoc-args = ["--html-in-header", ".cargo/katex-header.html"]
+
+[lints]
+workspace = true

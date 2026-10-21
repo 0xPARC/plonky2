@@ -6,7 +6,6 @@ authors = ["Daniel Lubarov <daniel@lubarov.com>", "William Borgeaud <williamborg
 readme = "README.md"
 edition.workspace = true
 license.workspace = true
-homepage.workspace = true
 repository.workspace = true
 keywords.workspace = true
 categories.workspace = true
@@ -23,7 +22,7 @@ ahash = { workspace = true }
 anyhow = { workspace = true }
 hashbrown = { workspace = true }
 itertools = { workspace = true }
-keccak-hash = { version = "0.8.0", default-features = false }
+keccak-hash = { version = "0.12.0", default-features = false }
 log = { workspace = true }
 num = { workspace = true }
 rand = { workspace = true }
